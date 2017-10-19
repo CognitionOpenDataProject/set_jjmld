@@ -49,11 +49,11 @@ library(nlme)
 ## Step 2: Load data
 
 ```{r}
-data <- read_excel("~/GitHub/set_jjmld/data/data.xlsx", skip = 1)
-names(data) <- c("Participant", "CFS_monocular", "CS", "infinite_RT", "RT", "LR_eye", "Trial", "Block") # This removes characters that R has trouble understanding from variable names
+data <- read_excel("~/GitHub/set_jjmld/data/Raw_data_long_format_Exp1.xlsx", skip = 1)
+names(data) <- c("Participant", "CFS_monocular", "CS", "infinite_RT", "RT", "LR_eye", "Trial", "Block", "Correct", "IncludedEye", "CSplusColor") # This removes characters that R has trouble understanding from variable names
 ```
 
-The data file contains the following eight variables:
+The data file contains the following 11 variables:
 
 - Participant: unique ID
 
@@ -71,6 +71,8 @@ The data file contains the following eight variables:
 
 - Block: block number (0 or 1), with 0 for the first 32 trials and 1 for the next 32 trials
 
+TODO: add last three
+
 ## Step 3: Tidy data
 
 ```{r}
@@ -84,12 +86,29 @@ data$CS <- as.factor(data$CS)
 ### Pre-processing
 > For the analysis of response times, only trials with correct responses (93.3%, SD = 6.1) were included. (page 79)
 
-The data file contains 1024 observations, i.e. the whole dataset of 64 observations in 16 participants. I cannot find data specifying whether the response was correct or incorrect. I am therefore unable to proceed with preprocessing and analysis.
+```{r}
+sum(data$Correct)/length(data$Correct)
+data <- data[data$Correct == 1, ]
+```
+
+This comes to 93.1% rather than 93.3%. Nonetheless, I proceed according to the method described.
 
 > Median response times were computed for each participant’s Conditioning and Suppression conditions. Truncating two response time distributions at the same numerical value (i.e., at the response time deadline of 4000 ms) would cause the analysis to include more data (from the slower end of the distribution) in the condition that yielded the fastest response times, thereby compromising a fair statistical comparison between the two conditions. In four participants, 50% of the trials in either the CS+ or the CS- condition yielded an infinitely long response (i.e., no response). As a consequence, the median response time for these participants was infinitely long as well, in at least one condition, and was therefore deemed uninformative. For these participants, we computed the median response times by including only the trials in which the target was presented to the dominant eye (i.e., the Eye condition that yielded the shortest response times). (page 79)
 
 ```{r}
+# Find participants with 50% (or more) infinite response times
+data_inf <- aggregate(infinite_RT ~ Participant + CS, data = data, sum)
+participants_with_many_misses <- unique(data_inf$Participant[data_inf$infinite_RT > 4])
+
+# Reduce data for those participants
+rows_to_remove <- which(data$Participant %in% participants_with_many_misses & data$IncludedEye == 0)
+data <- data[-rows_to_remove, ]
+
+# Calculate medians
+data_medians <- aggregate(RT ~ Participant + CFS_monocular + CS + CSplusColor, data = data, median)
 ```
+
+There were five participants rather than four for which the specified conditions were true and data were reduced.
 
 ### Descriptive statistics
 Descriptive statistics were reported in this paper as follow/up analyses to inferential statistics, but I have separated them and put them in this section.
@@ -97,30 +116,50 @@ Descriptive statistics were reported in this paper as follow/up analyses to infe
 > irrespective of the Suppression condition, trials in which a CS+ annulus was presented (M = 1557 ms, SD = 284) yielded faster response times than trials in which a CS− annulus was presented (M = 1718, SD = 432).
 
 ```{r}
-#m1 <- mean(data$RT[data$CS == 1])
-#compareValues(reportedValue = 1.557, obtainedValue = m1)
+m1 <- mean(data_medians$RT[data_medians$CS == 1])
+compareValues(reportedValue = 1.557, obtainedValue = m1)
 
-#sd1 <- sd(data$RT[data$CS == 1])
-#compareValues(reportedValue = 0.284, obtainedValue = sd1)
+sd1 <- sd(data_medians$RT[data_medians$CS == 1])
+compareValues(reportedValue = 0.284, obtainedValue = sd1)
 
-#m2 <- mean(data$RT[data$CS == 2])
-#compareValues(reportedValue = 1.718, obtainedValue = m2)
+m2 <- mean(data_medians$RT[data_medians$CS == 2])
+compareValues(reportedValue = 1.718, obtainedValue = m2)
 
-#sd2 <- sd(data$RT[data$CS == 2])
-#compareValues(reportedValue = 0.432, obtainedValue = sd2)
-
+sd2 <- sd(data_medians$RT[data_medians$CS == 2])
+compareValues(reportedValue = 0.432, obtainedValue = sd2)
 ```
+
+The means are close, but the standard deviations are way off.
 
 > [...] the response times of trials in which the targets were interocularly suppressed (M = 1660 ms, SD = 524), and trials in which they were not (M = 1615 ms, SD = 248).
 
 ```{r}
-#TODO
+m3 <- mean(data_medians$RT[data_medians$CFS_monocular == 1])
+compareValues(reportedValue = 1.660, obtainedValue = m3)
+
+sd3 <- sd(data_medians$RT[data_medians$CFS_monocular == 1])
+compareValues(reportedValue = 0.524, obtainedValue = sd3)
+
+m4 <- mean(data_medians$RT[data_medians$CFS_monocular == 2])
+compareValues(reportedValue = 1.615, obtainedValue = m4)
+
+sd4 <- sd(data_medians$RT[data_medians$CFS_monocular == 2])
+compareValues(reportedValue = 0.248, obtainedValue = sd4)
 ```
+
+Means and standard deviations are close.
 
 > Together, these findings demonstrate that stimuli that were previously paired with aversive stimulation, and therefore signal threat, are released from interocular suppression (322 ms) faster than stimuli that were not paired with a shock.
 
+This phrasing suggests that the comparison is between 
+
 ```{r}
-#TODO
+m5 <- (mean(data_medians$RT[data_medians$CS == 1 & data_medians$CFS_monocular == 2]) - 
+mean(data_medians$RT[data_medians$CS == 1 & data_medians$CFS_monocular == 1])) -
+(mean(data_medians$RT[data_medians$CS == 2 & data_medians$CFS_monocular == 2]) - 
+mean(data_medians$RT[data_medians$CS == 2 & data_medians$CFS_monocular == 1]))
+# NB: Check levels in the above calculation
+compareValues(reportedValue = 0.322, obtainedValue = m5)
 ```
 
 ### Inferential statistics
@@ -130,27 +169,23 @@ Descriptive statistics were reported in this paper as follow/up analyses to infe
 
 > The between-subject factor Color did not interact with either Suppression (p = 0.175) or Conditioning (p = 0.623). Finally, there was an interaction between Suppression and Conditioning on response times, F(1, 14) = 13.98, p = .002, η2 = .50, but no three-way interaction with the between-subject factor Color, F(1, 14) = .08, p = .780, η2 = .01.
 
-Note: Color variable is not present in datafile.
+It is not clear what kind of ANOVA was run. 
 
 ```{r}
-#TODO
+aov1 <- aov(RT ~ CSplusColor + Error(Participant/(CFS_monocular+CS)), data_medians)
+summary(aov1)
 
-#aov1 <- aov(RT ~ CS + Error(Participant/(CFS_monocular+Block)), data)
-#aov1
-
-#lme1 <- lme(RT ~ CS*CFS_monocular*Block, random = ~1|Participant, data)
-#anova(lme1)
-
-#compareValues(reportedValue = 14, obtainedValue = 0)
-#compareValues(reportedValue = 8.97, obtainedValue = 0)
-#compareValues(reportedValue = 0.010, obtainedValue = 0, isP = T)
-
+lme1 <- lme(RT ~ CSplusColor*CFS_monocular*CS, random = ~1|Participant, data_medians)
+anova(lme1)
 ```
 
 > Subsequent paired-samples t-tests revealed that when targets were interocularly suppressed, discrimination of the oriented gratings was faster when they were surrounded by a CS+ annulus (M = 1498 ms, SD = 416) than a CS− annulus (M = 1822 ms, SD = 646), t(15) = 3.72, p = .002, Cohen’s d = 1.92. When the grating and annulus were not interocularly suppressed (i.e., in the monocular condition), however, response times did not differ between CS+ trials (M = 1615 ms, SD = 252) and CS− trials (M = 1614 ms, SD = 271), t(15) = .04, p = .968, Cohen’s d = .02. There was no correlation between the influence of conditioning on response times in the monocular condition and the suppression condition, R(14) = .29, p = .276. 
 
 ```{r}
-#TODO
+# To do a paired t-test, some form of data reduction is required, such as an averaging of medians over conditions. This step is not described.
+
+#ttest1 <- t.test(data_medians$RT[data_medians$CS == 1], data_medians$RT[data_medians$CS == 2], type = "paired")
+
 ```
 
 > To assert that the absence of an effect of conditioning in the monocular condition reflected a null effect rather than experimental insensitivity we computed a Bayes factor (Dienes, 2014). The alternative hypothesis was modelled as a uniform distribution with a lower bound of zero and an upper bound equaling the effect of conditioning in the suppression condition. This revealed that the data was over seven times more likely to reflect a null effect than the alternative hypothesis (B01 = 7.14). 
@@ -161,17 +196,14 @@ Note: Color variable is not present in datafile.
 
 ## Step 5: Conclusion
 
-Key data are missing: correct responses and color of stimulus. It was not possible to preprocess the data for analysis.
-
-INSUFFICIENT INFORMATION ERROR therefore applies for all reported numbers. In the tally below, I have counted separately each instance of the degrees of freedom for the ANOVA, even though it is the same number.
 
 ```{r}
-codReport(Report_Type = 'pilot',
-          Article_ID = 'jjmld', 
-          Insufficient_Information_Errors = 46,
-          Decision_Errors = 0, 
-          Major_Numerical_Errors = 0, 
-          Minor_Numerical_Errors = 0)
+# codReport(Report_Type = 'pilot',
+#           Article_ID = 'jjmld', 
+#           Insufficient_Information_Errors = 0,
+#           Decision_Errors = 0, 
+#           Major_Numerical_Errors = 0, 
+#           Minor_Numerical_Errors = 0)
 ```
 
 
