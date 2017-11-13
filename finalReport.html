@@ -227,11 +227,17 @@ div.tocify {
 <div id="co-pilot-tom-hardwicke" class="section level4">
 <h4>Co-pilot: Tom Hardwicke</h4>
 </div>
-<div id="start-date-051217" class="section level4">
-<h4>Start date: 05/12/17</h4>
+<div id="start-date-may-12-2017" class="section level4">
+<h4>Start date: May 12 2017</h4>
 </div>
-<div id="end-date-102417" class="section level4">
-<h4>End date: 10/24/17</h4>
+<div id="end-date-oct-24-2017" class="section level4">
+<h4>End date: Oct 24 2017</h4>
+</div>
+<div id="final-verification-tom-hardwicke" class="section level4">
+<h4>Final verification: Tom Hardwicke</h4>
+</div>
+<div id="date-nov-9-2017" class="section level4">
+<h4>Date: Nov 9 2017</h4>
 <hr />
 </div>
 <div id="methods-summary" class="section level4">
@@ -256,7 +262,8 @@ library(knitr) # for kable table formating
 library(haven) # import and export 'SPSS', 'Stata' and 'SAS' Files
 library(readxl) # import excel files
 library(CODreports) # custom report functions
-library(nlme)</code></pre>
+library(nlme)
+library(afex) # for anova</code></pre>
 </div>
 <div id="step-2-load-data" class="section level2">
 <h2>Step 2: Load data</h2>
@@ -288,10 +295,10 @@ data$CS &lt;- as.factor(data$CS)</code></pre>
 <p>For the analysis of response times, only trials with correct responses (93.3%, SD = 6.1) were included. (page 79)</p>
 </blockquote>
 <pre class="r"><code>correctResponses &lt;- sum(data$Correct)/length(data$Correct)*100</code></pre>
-<pre class="r"><code>compareValues(reportedValue = 93.3, obtainedValue = correctResponses)</code></pre>
-<pre><code>## [1] &quot;MINOR NUMERICAL ERROR. The reported value (93.3) and the obtained value (93.1) differed by 0.21%. NB obtained value was rounded to 1 decimal places.&quot;</code></pre>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;93.3&quot;, obtainedValue = correctResponses, valueType = 'other')</code></pre>
+<pre><code>## [1] &quot;MINOR NUMERICAL ERROR for other. The reported value (93.3) and the obtained value (93.1) differed by 0.21%. NB obtained value was rounded to 1 decimal places.&quot;</code></pre>
 <p>This comes to 93.1% rather than 93.3%. Nonetheless, I proceed according to the method described.</p>
-<p>Exluded the incorrect responses:</p>
+<p>Excluded the incorrect responses:</p>
 <pre class="r"><code>data &lt;- data[data$Correct == 1, ]</code></pre>
 <blockquote>
 <p>Median response times were computed for each participant’s Conditioning and Suppression conditions. Truncating two response time distributions at the same numerical value (i.e., at the response time deadline of 4000 ms) would cause the analysis to include more data (from the slower end of the distribution) in the condition that yielded the fastest response times, thereby compromising a fair statistical comparison between the two conditions. In four participants, 50% of the trials in either the CS+ or the CS- condition yielded an infinitely long response (i.e., no response). As a consequence, the median response time for these participants was infinitely long as well, in at least one condition, and was therefore deemed uninformative. For these participants, we computed the median response times by including only the trials in which the target was presented to the dominant eye (i.e., the Eye condition that yielded the shortest response times). (page 79)</p>
@@ -307,8 +314,8 @@ data &lt;- data[-rows_to_remove, ]
 # Calculate medians
 data_medians &lt;- aggregate(RT ~ Participant + CFS_monocular + CS + CSplusColor, data = data, median)</code></pre>
 <p>There were five participants rather than four for which the specified conditions were true and data were reduced.</p>
-<pre class="r"><code>compareValues(reportedValue = 4, obtainedValue = 5)</code></pre>
-<pre><code>## [1] &quot;MAJOR NUMERICAL ERROR. The reported value (4) and the obtained value (5) differed by 25%. NB obtained value was rounded to 0 decimal places.&quot;</code></pre>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;4&quot;, obtainedValue = 5, valueType = 'other')</code></pre>
+<pre><code>## [1] &quot;MAJOR NUMERICAL ERROR for other. The reported value (4) and the obtained value (5) differed by 25%. NB obtained value was rounded to 0 decimal places.&quot;</code></pre>
 </div>
 <div id="descriptive-statistics" class="section level3">
 <h3>Descriptive statistics</h3>
@@ -317,33 +324,33 @@ data_medians &lt;- aggregate(RT ~ Participant + CFS_monocular + CS + CSplusColor
 <p>irrespective of the Suppression condition, trials in which a CS+ annulus was presented (M = 1557 ms, SD = 284) yielded faster response times than trials in which a CS− annulus was presented (M = 1718, SD = 432).</p>
 </blockquote>
 <pre class="r"><code>m1 &lt;- mean(data_medians$RT[data_medians$CS == 1])
-compareValues(reportedValue = 1.557, obtainedValue = m1)</code></pre>
-<pre><code>## [1] &quot;MINOR NUMERICAL ERROR. The reported value (1.557) and the obtained value (1.564) differed by 0.45%. NB obtained value was rounded to 3 decimal places.&quot;</code></pre>
+reportObject &lt;- compareValues2(reportedValue = &quot;1557&quot;, obtainedValue = m1*1000, valueType = 'mean')</code></pre>
+<pre><code>## [1] &quot;MINOR NUMERICAL ERROR for mean. The reported value (1557) and the obtained value (1564) differed by 0.45%. NB obtained value was rounded to 0 decimal places.&quot;</code></pre>
 <pre class="r"><code>sd1 &lt;- sd(data_medians$RT[data_medians$CS == 1])
-compareValues(reportedValue = 0.284, obtainedValue = sd1)</code></pre>
-<pre><code>## [1] &quot;MAJOR NUMERICAL ERROR. The reported value (0.284) and the obtained value (0.338) differed by 19.01%. NB obtained value was rounded to 3 decimal places.&quot;</code></pre>
+reportObject &lt;- compareValues2(reportedValue = &quot;284&quot;, obtainedValue = sd1*1000, valueType = 'sd')</code></pre>
+<pre><code>## [1] &quot;MAJOR NUMERICAL ERROR for sd. The reported value (284) and the obtained value (338) differed by 19.01%. NB obtained value was rounded to 0 decimal places.&quot;</code></pre>
 <pre class="r"><code>m2 &lt;- mean(data_medians$RT[data_medians$CS == 2])
-compareValues(reportedValue = 1.718, obtainedValue = m2)</code></pre>
-<pre><code>## [1] &quot;MINOR NUMERICAL ERROR. The reported value (1.718) and the obtained value (1.742) differed by 1.4%. NB obtained value was rounded to 3 decimal places.&quot;</code></pre>
+reportObject &lt;- compareValues2(reportedValue = &quot;1718&quot;, obtainedValue = m2*1000, valueType = 'mean')</code></pre>
+<pre><code>## [1] &quot;MINOR NUMERICAL ERROR for mean. The reported value (1718) and the obtained value (1742) differed by 1.4%. NB obtained value was rounded to 0 decimal places.&quot;</code></pre>
 <pre class="r"><code>sd2 &lt;- sd(data_medians$RT[data_medians$CS == 2])
-compareValues(reportedValue = 0.432, obtainedValue = sd2)</code></pre>
-<pre><code>## [1] &quot;MAJOR NUMERICAL ERROR. The reported value (0.432) and the obtained value (0.528) differed by 22.22%. NB obtained value was rounded to 3 decimal places.&quot;</code></pre>
+reportObject &lt;- compareValues2(reportedValue = &quot;432&quot;, obtainedValue = sd2*1000, valueType = 'sd')</code></pre>
+<pre><code>## [1] &quot;MAJOR NUMERICAL ERROR for sd. The reported value (432) and the obtained value (528) differed by 22.22%. NB obtained value was rounded to 0 decimal places.&quot;</code></pre>
 <p>The means are close, but there are considerable differences for the standard deviations.</p>
 <blockquote>
 <p>[…] the response times of trials in which the targets were interocularly suppressed (M = 1660 ms, SD = 524), and trials in which they were not (M = 1615 ms, SD = 248).</p>
 </blockquote>
 <pre class="r"><code>m3 &lt;- mean(data_medians$RT[data_medians$CFS_monocular == 1])
-compareValues(reportedValue = 1.660, obtainedValue = m3)</code></pre>
-<pre><code>## [1] &quot;MINOR NUMERICAL ERROR. The reported value (1.66) and the obtained value (1.68) differed by 1.2%. NB obtained value was rounded to 2 decimal places.&quot;</code></pre>
+reportObject &lt;- compareValues2(reportedValue = &quot;1660&quot;, obtainedValue = m3*1000, valueType = 'mean')</code></pre>
+<pre><code>## [1] &quot;MINOR NUMERICAL ERROR for mean. The reported value (1660) and the obtained value (1683) differed by 1.39%. NB obtained value was rounded to 0 decimal places.&quot;</code></pre>
 <pre class="r"><code>sd3 &lt;- sd(data_medians$RT[data_medians$CFS_monocular == 1])
-compareValues(reportedValue = 0.524, obtainedValue = sd3)</code></pre>
-<pre><code>## [1] &quot;MAJOR NUMERICAL ERROR. The reported value (0.524) and the obtained value (0.584) differed by 11.45%. NB obtained value was rounded to 3 decimal places.&quot;</code></pre>
+reportObject &lt;- compareValues2(reportedValue = &quot;524&quot;, obtainedValue = sd3*1000, valueType = 'sd')</code></pre>
+<pre><code>## [1] &quot;MAJOR NUMERICAL ERROR for sd. The reported value (524) and the obtained value (584) differed by 11.45%. NB obtained value was rounded to 0 decimal places.&quot;</code></pre>
 <pre class="r"><code>m4 &lt;- mean(data_medians$RT[data_medians$CFS_monocular == 2])
-compareValues(reportedValue = 1.615, obtainedValue = m4)</code></pre>
-<pre><code>## [1] &quot;MINOR NUMERICAL ERROR. The reported value (1.615) and the obtained value (1.624) differed by 0.56%. NB obtained value was rounded to 3 decimal places.&quot;</code></pre>
+reportObject &lt;- compareValues2(reportedValue = &quot;1615&quot;, obtainedValue = m4*1000, valueType = 'mean')</code></pre>
+<pre><code>## [1] &quot;MINOR NUMERICAL ERROR for mean. The reported value (1615) and the obtained value (1624) differed by 0.56%. NB obtained value was rounded to 0 decimal places.&quot;</code></pre>
 <pre class="r"><code>sd4 &lt;- sd(data_medians$RT[data_medians$CFS_monocular == 2])
-compareValues(reportedValue = 0.248, obtainedValue = sd4)</code></pre>
-<pre><code>## [1] &quot;MINOR NUMERICAL ERROR. The reported value (0.248) and the obtained value (0.258) differed by 4.03%. NB obtained value was rounded to 3 decimal places.&quot;</code></pre>
+reportObject &lt;- compareValues2(reportedValue = &quot;248&quot;, obtainedValue = sd4*1000, valueType = 'sd')</code></pre>
+<pre><code>## [1] &quot;MINOR NUMERICAL ERROR for sd. The reported value (248) and the obtained value (258) differed by 4.03%. NB obtained value was rounded to 0 decimal places.&quot;</code></pre>
 <p>Means and standard deviations are close, but there is one major error.</p>
 <blockquote>
 <p>Together, these findings demonstrate that stimuli that were previously paired with aversive stimulation, and therefore signal threat, are released from interocular suppression (322 ms) faster than stimuli that were not paired with a shock.</p>
@@ -352,51 +359,73 @@ compareValues(reportedValue = 0.248, obtainedValue = sd4)</code></pre>
 mean(data_medians$RT[data_medians$CS == 1 &amp; data_medians$CFS_monocular == 1])) -
 (mean(data_medians$RT[data_medians$CS == 2 &amp; data_medians$CFS_monocular == 2]) - 
 mean(data_medians$RT[data_medians$CS == 2 &amp; data_medians$CFS_monocular == 1]))
-# NB: Check levels in the above calculation
-compareValues(reportedValue = 0.322, obtainedValue = m5)</code></pre>
-<pre><code>## [1] &quot;MINOR NUMERICAL ERROR. The reported value (0.322) and the obtained value (0.337) differed by 4.66%. NB obtained value was rounded to 3 decimal places.&quot;</code></pre>
+
+reportObject &lt;- compareValues2(reportedValue = &quot;322&quot;, obtainedValue = m5*1000, valueType = 'mean')</code></pre>
+<pre><code>## [1] &quot;MINOR NUMERICAL ERROR for mean. The reported value (322) and the obtained value (337) differed by 4.66%. NB obtained value was rounded to 0 decimal places.&quot;</code></pre>
 </div>
 <div id="inferential-statistics" class="section level3">
 <h3>Inferential statistics</h3>
 <blockquote>
 <p>We conducted a 2 × 2 repeated-measures ANOVA with the within-subject factors Conditioning and Suppression, and the between-subject factor Color. This revealed a main effect of Conditioning, F(1, 14) = 8.97, p = .010, η2 = .39</p>
 </blockquote>
+<pre class="r"><code>aov.out &lt;- aov_ez(id = &quot;Participant&quot;, data = data_medians, dv = 'RT', within = c('CS', 'CFS_monocular'), between = 'CSplusColor', anova_table = list(correction = &quot;none&quot;, es = &quot;pes&quot;), type = 'III')
+
+reportObject &lt;- compareValues2(reportedValue = &quot;1&quot;, obtainedValue = aov.out$anova_table$`num Df`[2], valueType = 'df')</code></pre>
+<pre><code>## [1] &quot;MATCH for df. The reported value (1) and the obtained value (1) differed by 0%. NB obtained value was rounded to 0 decimal places.&quot;</code></pre>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;14&quot;, obtainedValue = aov.out$anova_table$`den Df`[2], valueType = 'df')</code></pre>
+<pre><code>## [1] &quot;MATCH for df. The reported value (14) and the obtained value (14) differed by 0%. NB obtained value was rounded to 0 decimal places.&quot;</code></pre>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;8.97&quot;, obtainedValue = aov.out$anova_table$`F`[2], valueType = 'F')</code></pre>
+<pre><code>## [1] &quot;MINOR NUMERICAL ERROR for F. The reported value (8.97) and the obtained value (9.27) differed by 3.34%. NB obtained value was rounded to 2 decimal places.&quot;</code></pre>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;.010&quot;, obtainedValue = aov.out$anova_table$`Pr(&gt;F)`[2], valueType = 'p')</code></pre>
+<pre><code>## [1] &quot;MAJOR NUMERICAL ERROR for p. The reported value (0.01) and the obtained value (0.009) differed by 10%. NB obtained value was rounded to 3 decimal places.&quot;</code></pre>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;.39&quot;, obtainedValue = aov.out$anova_table$`pes`[2], valueType = 'es')</code></pre>
+<pre><code>## [1] &quot;MINOR NUMERICAL ERROR for es. The reported value (0.39) and the obtained value (0.4) differed by 2.56%. NB obtained value was rounded to 2 decimal places.&quot;</code></pre>
 <blockquote>
 <p>The absence of a main effect of Suppression, F(1, 14) = .20, p = .659, η2 = .01, indicated […].</p>
 </blockquote>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;1&quot;, obtainedValue = aov.out$anova_table$`num Df`[4], valueType = 'df')</code></pre>
+<pre><code>## [1] &quot;MATCH for df. The reported value (1) and the obtained value (1) differed by 0%. NB obtained value was rounded to 0 decimal places.&quot;</code></pre>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;14&quot;, obtainedValue = aov.out$anova_table$`den Df`[4], valueType = 'df')</code></pre>
+<pre><code>## [1] &quot;MATCH for df. The reported value (14) and the obtained value (14) differed by 0%. NB obtained value was rounded to 0 decimal places.&quot;</code></pre>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;.20&quot;, obtainedValue = aov.out$anova_table$`F`[4], valueType = 'F')</code></pre>
+<pre><code>## [1] &quot;MAJOR NUMERICAL ERROR for F. The reported value (0.2) and the obtained value (0.31) differed by 55%. NB obtained value was rounded to 2 decimal places.&quot;</code></pre>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;.659&quot;, obtainedValue = aov.out$anova_table$`Pr(&gt;F)`[4], valueType = 'p')</code></pre>
+<pre><code>## [1] &quot;MAJOR NUMERICAL ERROR for p. The reported value (0.659) and the obtained value (0.588) differed by 10.77%. NB obtained value was rounded to 3 decimal places.&quot;</code></pre>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;.01&quot;, obtainedValue = aov.out$anova_table$`pes`[4], valueType = 'es')</code></pre>
+<pre><code>## [1] &quot;MAJOR NUMERICAL ERROR for es. The reported value (0.01) and the obtained value (0.02) differed by 100%. NB obtained value was rounded to 2 decimal places.&quot;</code></pre>
 <blockquote>
-<p>The between-subject factor Color did not interact with either Suppression (p = 0.175) or Conditioning (p = 0.623). Finally, there was an interaction between Suppression and Conditioning on response times, F(1, 14) = 13.98, p = .002, η2 = .50, but no three-way interaction with the between-subject factor Color, F(1, 14) = .08, p = .780, η2 = .01.</p>
+<p>The between-subject factor Color did not interact with either Suppression (p = 0.175) or Conditioning (p = 0.623).</p>
 </blockquote>
-<pre class="r"><code>aov1 &lt;- aov(RT ~ CSplusColor + Error(Participant/(CFS_monocular+CS)), data_medians)
-summary(aov1)</code></pre>
-<pre><code>## 
-## Error: Participant
-##             Df Sum Sq Mean Sq F value Pr(&gt;F)
-## CSplusColor  1  0.011  0.0111    0.02  0.889
-## Residuals   14  7.630  0.5450               
-## 
-## Error: Participant:CFS_monocular
-##           Df Sum Sq Mean Sq F value Pr(&gt;F)
-## Residuals 16  2.802  0.1751               
-## 
-## Error: Participant:CS
-##           Df Sum Sq Mean Sq F value Pr(&gt;F)
-## Residuals 16  1.271 0.07945               
-## 
-## Error: Within
-##           Df Sum Sq Mean Sq F value Pr(&gt;F)
-## Residuals 16 0.9771 0.06107</code></pre>
-<pre class="r"><code>lme1 &lt;- lme(RT ~ CSplusColor*CFS_monocular*CS, random = ~1|Participant, data_medians)
-anova(lme1)</code></pre>
-<pre><code>##                              numDF denDF  F-value p-value
-## (Intercept)                      1    42 321.0250  &lt;.0001
-## CSplusColor                      1    14   0.0203  0.8887
-## CFS_monocular                    1    42   0.6129  0.4381
-## CS                               1    42   5.5483  0.0232
-## CSplusColor:CFS_monocular        1    42   2.1584  0.1492
-## CSplusColor:CS                   1    42   0.0093  0.9235
-## CFS_monocular:CS                 1    42   4.9943  0.0308
-## CSplusColor:CFS_monocular:CS     1    42   0.0359  0.8506</code></pre>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;0.175&quot;, obtainedValue = aov.out$anova_table$`Pr(&gt;F)`[5], valueType = 'p')</code></pre>
+<pre><code>## [1] &quot;MAJOR NUMERICAL ERROR for p. The reported value (0.175) and the obtained value (0.316) differed by 80.57%. NB obtained value was rounded to 3 decimal places.&quot;</code></pre>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;0.623&quot;, obtainedValue = aov.out$anova_table$`Pr(&gt;F)`[3], valueType = 'p')</code></pre>
+<pre><code>## [1] &quot;MAJOR NUMERICAL ERROR for p. The reported value (0.623) and the obtained value (0.902) differed by 44.78%. NB obtained value was rounded to 3 decimal places.&quot;</code></pre>
+<blockquote>
+<p>Finally, there was an interaction between Suppression and Conditioning on response times, F(1, 14) = 13.98, p = .002, η2 = .50,</p>
+</blockquote>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;1&quot;, obtainedValue = aov.out$anova_table$`num Df`[6], valueType = 'df')</code></pre>
+<pre><code>## [1] &quot;MATCH for df. The reported value (1) and the obtained value (1) differed by 0%. NB obtained value was rounded to 0 decimal places.&quot;</code></pre>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;14&quot;, obtainedValue = aov.out$anova_table$`den Df`[6], valueType = 'df')</code></pre>
+<pre><code>## [1] &quot;MATCH for df. The reported value (14) and the obtained value (14) differed by 0%. NB obtained value was rounded to 0 decimal places.&quot;</code></pre>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;13.98&quot;, obtainedValue = aov.out$anova_table$`F`[6], valueType = 'F')</code></pre>
+<pre><code>## [1] &quot;MAJOR NUMERICAL ERROR for F. The reported value (13.98) and the obtained value (12.31) differed by 11.95%. NB obtained value was rounded to 2 decimal places.&quot;</code></pre>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;.002&quot;, obtainedValue = aov.out$anova_table$`Pr(&gt;F)`[6], valueType = 'p')</code></pre>
+<pre><code>## [1] &quot;MAJOR NUMERICAL ERROR for p. The reported value (0.002) and the obtained value (0.003) differed by 50%. NB obtained value was rounded to 3 decimal places.&quot;</code></pre>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;.50&quot;, obtainedValue = aov.out$anova_table$`pes`[6], valueType = 'es')</code></pre>
+<pre><code>## [1] &quot;MINOR NUMERICAL ERROR for es. The reported value (0.5) and the obtained value (0.47) differed by 6%. NB obtained value was rounded to 2 decimal places.&quot;</code></pre>
+<blockquote>
+<p>but no three-way interaction with the between-subject factor Color, F(1, 14) = .08, p = .780, η2 = .01.</p>
+</blockquote>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;1&quot;, obtainedValue = aov.out$anova_table$`num Df`[7], valueType = 'df')</code></pre>
+<pre><code>## [1] &quot;MATCH for df. The reported value (1) and the obtained value (1) differed by 0%. NB obtained value was rounded to 0 decimal places.&quot;</code></pre>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;14&quot;, obtainedValue = aov.out$anova_table$`den Df`[7], valueType = 'df')</code></pre>
+<pre><code>## [1] &quot;MATCH for df. The reported value (14) and the obtained value (14) differed by 0%. NB obtained value was rounded to 0 decimal places.&quot;</code></pre>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;.08&quot;, obtainedValue = aov.out$anova_table$`F`[7], valueType = 'F')</code></pre>
+<pre><code>## [1] &quot;MAJOR NUMERICAL ERROR for F. The reported value (0.08) and the obtained value (0.09) differed by 12.5%. NB obtained value was rounded to 2 decimal places.&quot;</code></pre>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;.780&quot;, obtainedValue = aov.out$anova_table$`Pr(&gt;F)`[7], valueType = 'p')</code></pre>
+<pre><code>## [1] &quot;MINOR NUMERICAL ERROR for p. The reported value (0.78) and the obtained value (0.77) differed by 1.28%. NB obtained value was rounded to 3 decimal places.&quot;</code></pre>
+<pre class="r"><code>reportObject &lt;- compareValues2(reportedValue = &quot;.01&quot;, obtainedValue = aov.out$anova_table$`pes`[7], valueType = 'es')</code></pre>
+<pre><code>## [1] &quot;MATCH for es. The reported value (0.01) and the obtained value (0.01) differed by 0%. NB obtained value was rounded to 2 decimal places.&quot;</code></pre>
 <blockquote>
 <p>Subsequent paired-samples t-tests revealed that when targets were interocularly suppressed, discrimination of the oriented gratings was faster when they were surrounded by a CS+ annulus (M = 1498 ms, SD = 416) than a CS− annulus (M = 1822 ms, SD = 646), t(15) = 3.72, p = .002, Cohen’s d = 1.92. When the grating and annulus were not interocularly suppressed (i.e., in the monocular condition), however, response times did not differ between CS+ trials (M = 1615 ms, SD = 252) and CS− trials (M = 1614 ms, SD = 271), t(15) = .04, p = .968, Cohen’s d = .02. There was no correlation between the influence of conditioning on response times in the monocular condition and the suppression condition, R(14) = .29, p = .276.</p>
 </blockquote>
@@ -433,9 +462,43 @@ anova(lme1)</code></pre>
 </tr>
 </tbody>
 </table>
-<p>Initially we were unable to proceed with the analysis because necessary information was not provided in the data file. Specifically, responses were not identified as correct or incorrect - we need this information in order to calculate the response times, which are based only on trials with correct responses. Additionally, we cannot see a ‘color’ variable in the data file, which we needed in order to reproduce the 2 × 2 repeated-measures ANOVA with the within-subject factors Conditioning and Suppression, and the between-subject factor Color.</p>
+<p>Initially we were unable to proceed with the analysis because necessary information was not provided in the data file. Specifically, responses were not identified as correct or incorrect - we need this information in order to calculate the response times, which are based only on trials with correct responses. Additionally, there was no ‘color’ variable in the data file, which we needed in order to reproduce the 2 × 2 repeated-measures ANOVA with the within-subject factors Conditioning and Suppression, and the between-subject factor Color.</p>
 <p>We contacted one of the original authors and they sent new data files containing the missing information. However, they also said that they could no longer reproduce some of the reported values (they did not specify which ones). They also said that “discrepancies should be relatively negligible, though, in terms of interpretations.”</p>
-<p>We continued to attempt the reanalysis with the new data files in order to estimate the number of reproducibility errors. We encountered 4 major numerical errors and one insufficience information error. Because we could not complete part of the analysis, we cannot ascertain whether the substantive conclusions of the article were influenced by the reproducibility issues.</p>
+<p>We continued to attempt the reanalysis with the new data files in order to estimate the number of reproducibility errors. We encountered major numerical errors and one insufficient information error. Because we could not complete part of the analysis, we cannot ascertain whether the substantive conclusions of the article were influenced by the reproducibility issues.</p>
+<pre class="r"><code>reportObject$Article_ID &lt;- &quot;jjmld&quot;
+reportObject$affectsConclusion &lt;- &quot;unclear&quot;
+reportObject$error_typo &lt;- 0
+reportObject$error_specification &lt;- 0
+reportObject$error_analysis &lt;- 0
+reportObject$error_data &lt;- 0
+reportObject$error_unidentified &lt;- 1
+reportObject$Author_Assistance &lt;- T
+reportObject$resolved_typo &lt;- 0
+reportObject$resolved_specification &lt;- 0
+reportObject$resolved_analysis &lt;- 0
+reportObject$resolved_data &lt;- 1
+reportObject$correctionSuggested &lt;- F
+reportObject$correctionPublished &lt;- NA
+
+# decide on final outcome
+if(reportObject$Decision_Errors &gt; 0 | reportObject$Major_Numerical_Errors &gt; 0 | reportObject$Insufficient_Information_Errors &gt; 0){
+  reportObject$finalOutcome &lt;- &quot;Failure&quot;
+  if(reportObject$Author_Assistance == T){
+    reportObject$finalOutcome &lt;- &quot;Failure despite author assistance&quot;
+  }
+}else{
+  reportObject$finalOutcome &lt;- &quot;Success&quot;
+  if(reportObject$Author_Assistance == T){
+    reportObject$finalOutcome &lt;- &quot;Success with author assistance&quot;
+  }
+}
+
+# save the report object
+filename &lt;- paste0(&quot;reportObject_&quot;, reportObject$Article_ID,&quot;.csv&quot;)
+write_csv(reportObject, filename)</code></pre>
+</div>
+<div id="session-information" class="section level2">
+<h2>Session information</h2>
 <pre class="r"><code>devtools::session_info()</code></pre>
 <pre><code>##  setting  value                       
 ##  version  R version 3.3.2 (2016-10-31)
@@ -443,121 +506,196 @@ anova(lme1)</code></pre>
 ##  ui       X11                         
 ##  language (EN)                        
 ##  collate  en_US.UTF-8                 
-##  tz       Europe/London               
-##  date     2017-10-24                  
+##  tz       America/Los_Angeles         
+##  date     2017-11-10                  
 ## 
-##  package    * version date      
-##  assertthat   0.2.0   2017-04-11
-##  backports    1.0.5   2017-01-18
-##  base       * 3.3.2   2016-10-31
-##  bindr        0.1     2016-11-13
-##  bindrcpp     0.2     2017-06-17
-##  broom        0.4.2   2017-02-13
-##  cellranger   1.1.0   2016-07-27
-##  CODreports * 0.1     2017-07-20
-##  colorspace   1.3-2   2016-12-14
-##  datasets   * 3.3.2   2016-10-31
-##  devtools     1.13.3  2017-08-02
-##  digest       0.6.12  2017-01-27
-##  dplyr      * 0.7.4   2017-09-28
-##  evaluate     0.10.1  2017-06-24
-##  forcats      0.2.0   2017-01-23
-##  foreign      0.8-67  2016-09-13
-##  ggplot2    * 2.2.1   2016-12-30
-##  glue         1.1.1   2017-06-21
-##  graphics   * 3.3.2   2016-10-31
-##  grDevices  * 3.3.2   2016-10-31
-##  grid         3.3.2   2016-10-31
-##  gtable       0.2.0   2016-02-26
-##  haven      * 1.0.0   2016-09-23
-##  highr        0.6     2016-05-09
-##  hms          0.3     2016-11-22
-##  htmltools    0.3.6   2017-04-28
-##  httr         1.3.1   2017-08-20
-##  jsonlite     1.5     2017-06-01
-##  knitr      * 1.17    2017-08-10
-##  lattice      0.20-34 2016-09-06
-##  lazyeval     0.2.0   2016-06-12
-##  lubridate    1.6.0   2016-09-13
-##  magrittr     1.5     2014-11-22
-##  memoise      1.1.0   2017-04-21
-##  methods    * 3.3.2   2016-10-31
-##  mnormt       1.5-5   2016-10-15
-##  modelr       0.1.0   2016-08-31
-##  munsell      0.4.3   2016-02-13
-##  nlme       * 3.1-128 2016-05-10
-##  parallel     3.3.2   2016-10-31
-##  pkgconfig    2.0.1   2017-03-21
-##  plyr         1.8.4   2016-06-08
-##  psych        1.7.5   2017-05-03
-##  purrr      * 0.2.3   2017-08-02
-##  R6           2.2.2   2017-06-17
-##  Rcpp         0.12.13 2017-09-28
-##  readr      * 1.1.0   2017-03-22
-##  readxl     * 1.0.0   2017-04-18
-##  reshape2     1.4.2   2016-10-22
-##  rlang        0.1.2   2017-08-09
-##  rmarkdown    1.6     2017-06-15
-##  rprojroot    1.2     2017-01-16
-##  rvest        0.3.2   2016-06-17
-##  scales       0.4.1   2016-11-09
-##  stats      * 3.3.2   2016-10-31
-##  stringi      1.1.5   2017-04-07
-##  stringr      1.2.0   2017-02-18
-##  tibble     * 1.3.4   2017-08-22
-##  tidyr      * 0.7.1   2017-09-01
-##  tidyverse  * 1.1.1   2017-01-27
-##  tools        3.3.2   2016-10-31
-##  utils      * 3.3.2   2016-10-31
-##  withr        2.0.0   2017-10-17
-##  xml2         1.1.1   2017-01-24
-##  yaml         2.1.14  2016-11-12
+##  package      * version  date      
+##  acepack        1.4.1    2016-10-29
+##  afex         * 0.18-0   2017-05-25
+##  assertthat     0.2.0    2017-04-11
+##  backports      1.0.5    2017-01-18
+##  base         * 3.3.2    2016-10-31
+##  base64enc      0.1-3    2015-07-28
+##  bindr          0.1      2016-11-13
+##  bindrcpp       0.2      2017-06-17
+##  broom          0.4.2    2017-02-13
+##  car            2.1-5    2017-07-04
+##  cellranger     1.1.0    2016-07-27
+##  checkmate      1.8.2    2016-11-02
+##  cluster        2.0.5    2016-10-08
+##  coda           0.19-1   2016-12-08
+##  codetools      0.2-15   2016-10-05
+##  CODreports   * 0.1      2017-11-09
+##  coin           1.1-3    2016-11-28
+##  colorspace     1.3-2    2016-12-14
+##  data.table     1.10.4-3 2017-10-27
+##  datasets     * 3.3.2    2016-10-31
+##  devtools       1.13.3   2017-08-02
+##  digest         0.6.12   2017-01-27
+##  dplyr        * 0.7.4    2017-09-28
+##  estimability * 1.2      2016-11-19
+##  evaluate       0.10.1   2017-06-24
+##  forcats        0.2.0    2017-01-23
+##  foreign        0.8-67   2016-09-13
+##  Formula        1.2-2    2017-07-10
+##  ggplot2      * 2.2.1    2016-12-30
+##  glue           1.1.1    2017-06-21
+##  graphics     * 3.3.2    2016-10-31
+##  grDevices    * 3.3.2    2016-10-31
+##  grid           3.3.2    2016-10-31
+##  gridExtra      2.3      2017-09-09
+##  gtable         0.2.0    2016-02-26
+##  haven        * 1.0.0    2016-09-23
+##  highr          0.6      2016-05-09
+##  Hmisc          4.0-3    2017-05-02
+##  hms            0.3      2016-11-22
+##  htmlTable      1.9      2017-01-26
+##  htmltools      0.3.6    2017-04-28
+##  htmlwidgets    0.8      2016-11-09
+##  httr           1.3.1    2017-08-20
+##  jsonlite       1.5      2017-06-01
+##  knitr        * 1.17     2017-08-10
+##  lattice        0.20-34  2016-09-06
+##  latticeExtra   0.6-28   2016-02-09
+##  lazyeval       0.2.0    2016-06-12
+##  lme4         * 1.1-13   2017-04-19
+##  lmerTest       2.0-33   2016-12-03
+##  lsmeans      * 2.25-5   2017-03-09
+##  lubridate      1.6.0    2016-09-13
+##  magrittr       1.5      2014-11-22
+##  MASS           7.3-45   2016-04-21
+##  Matrix       * 1.2-7.1  2016-09-01
+##  MatrixModels   0.4-1    2015-08-22
+##  memoise        1.1.0    2017-04-21
+##  methods      * 3.3.2    2016-10-31
+##  mgcv           1.8-17   2017-02-08
+##  minqa          1.2.4    2014-10-09
+##  mnormt         1.5-5    2016-10-15
+##  modelr         0.1.0    2016-08-31
+##  modeltools     0.2-21   2013-09-02
+##  multcomp       1.4-6    2016-07-14
+##  munsell        0.4.3    2016-02-13
+##  mvtnorm        1.0-5    2016-02-02
+##  nlme         * 3.1-128  2016-05-10
+##  nloptr         1.0.4    2014-08-04
+##  nnet           7.3-12   2016-02-02
+##  parallel       3.3.2    2016-10-31
+##  pbkrtest       0.4-6    2016-01-27
+##  pkgconfig      2.0.1    2017-03-21
+##  plyr           1.8.4    2016-06-08
+##  psych          1.7.5    2017-05-03
+##  purrr        * 0.2.3    2017-08-02
+##  quantreg       5.29     2016-09-04
+##  R6             2.2.2    2017-06-17
+##  RColorBrewer   1.1-2    2014-12-07
+##  Rcpp           0.12.13  2017-09-28
+##  readr        * 1.1.0    2017-03-22
+##  readxl       * 1.0.0    2017-04-18
+##  reshape2       1.4.2    2016-10-22
+##  rlang          0.1.2    2017-08-09
+##  rmarkdown      1.6      2017-06-15
+##  rpart          4.1-10   2015-06-29
+##  rprojroot      1.2      2017-01-16
+##  rvest          0.3.2    2016-06-17
+##  sandwich       2.3-4    2015-09-24
+##  scales         0.4.1    2016-11-09
+##  SparseM        1.74     2016-11-10
+##  splines        3.3.2    2016-10-31
+##  stats        * 3.3.2    2016-10-31
+##  stats4         3.3.2    2016-10-31
+##  stringi        1.1.5    2017-04-07
+##  stringr        1.2.0    2017-02-18
+##  survival       2.41-3   2017-04-04
+##  TH.data        1.0-8    2017-01-23
+##  tibble       * 1.3.4    2017-08-22
+##  tidyr        * 0.7.1    2017-09-01
+##  tidyverse    * 1.1.1    2017-01-27
+##  tools          3.3.2    2016-10-31
+##  utils        * 3.3.2    2016-10-31
+##  withr          2.0.0    2017-10-17
+##  xml2           1.1.1    2017-01-24
+##  xtable         1.8-2    2016-02-05
+##  yaml           2.1.14   2016-11-12
+##  zoo            1.7-14   2016-12-16
 ##  source                                              
+##  CRAN (R 3.3.0)                                      
+##  CRAN (R 3.3.2)                                      
 ##  cran (@0.2.0)                                       
 ##  CRAN (R 3.3.2)                                      
 ##  local                                               
+##  CRAN (R 3.3.0)                                      
 ##  cran (@0.1)                                         
 ##  cran (@0.2)                                         
 ##  CRAN (R 3.3.2)                                      
-##  CRAN (R 3.3.0)                                      
-##  Github (CognitionOpenDataProject/CODreports@010531e)
 ##  CRAN (R 3.3.2)                                      
+##  CRAN (R 3.3.0)                                      
+##  CRAN (R 3.3.0)                                      
+##  CRAN (R 3.3.2)                                      
+##  CRAN (R 3.3.2)                                      
+##  CRAN (R 3.3.2)                                      
+##  Github (CognitionOpenDataProject/CODreports@48e764a)
+##  CRAN (R 3.3.2)                                      
+##  CRAN (R 3.3.2)                                      
+##  cran (@1.10.4-)                                     
 ##  local                                               
 ##  cran (@1.13.3)                                      
 ##  cran (@0.6.12)                                      
 ##  cran (@0.7.4)                                       
+##  CRAN (R 3.3.2)                                      
 ##  cran (@0.10.1)                                      
 ##  CRAN (R 3.3.2)                                      
 ##  CRAN (R 3.3.2)                                      
+##  cran (@1.2-2)                                       
 ##  CRAN (R 3.3.2)                                      
 ##  cran (@1.1.1)                                       
 ##  local                                               
 ##  local                                               
 ##  local                                               
+##  cran (@2.3)                                         
 ##  CRAN (R 3.3.0)                                      
 ##  CRAN (R 3.3.0)                                      
 ##  CRAN (R 3.3.0)                                      
+##  cran (@4.0-3)                                       
+##  CRAN (R 3.3.2)                                      
 ##  CRAN (R 3.3.2)                                      
 ##  cran (@0.3.6)                                       
+##  CRAN (R 3.3.2)                                      
 ##  CRAN (R 3.3.2)                                      
 ##  cran (@1.5)                                         
 ##  cran (@1.17)                                        
 ##  CRAN (R 3.3.2)                                      
 ##  CRAN (R 3.3.0)                                      
 ##  CRAN (R 3.3.0)                                      
-##  CRAN (R 3.3.0)                                      
-##  cran (@1.1.0)                                       
-##  local                                               
+##  CRAN (R 3.3.2)                                      
+##  CRAN (R 3.3.2)                                      
+##  CRAN (R 3.3.2)                                      
 ##  CRAN (R 3.3.0)                                      
 ##  CRAN (R 3.3.0)                                      
 ##  CRAN (R 3.3.0)                                      
 ##  CRAN (R 3.3.2)                                      
+##  CRAN (R 3.3.0)                                      
+##  cran (@1.1.0)                                       
 ##  local                                               
+##  CRAN (R 3.3.2)                                      
+##  CRAN (R 3.3.0)                                      
+##  CRAN (R 3.3.0)                                      
+##  CRAN (R 3.3.0)                                      
+##  CRAN (R 3.3.0)                                      
+##  CRAN (R 3.3.0)                                      
+##  CRAN (R 3.3.0)                                      
+##  CRAN (R 3.3.0)                                      
+##  CRAN (R 3.3.2)                                      
+##  CRAN (R 3.3.0)                                      
+##  CRAN (R 3.3.2)                                      
+##  local                                               
+##  CRAN (R 3.3.0)                                      
 ##  cran (@2.0.1)                                       
 ##  CRAN (R 3.3.0)                                      
 ##  CRAN (R 3.3.2)                                      
 ##  cran (@0.2.3)                                       
+##  CRAN (R 3.3.0)                                      
 ##  cran (@2.2.2)                                       
+##  CRAN (R 3.3.0)                                      
 ##  cran (@0.12.13)                                     
 ##  CRAN (R 3.3.2)                                      
 ##  cran (@1.0.0)                                       
@@ -565,11 +703,18 @@ anova(lme1)</code></pre>
 ##  cran (@0.1.2)                                       
 ##  cran (@1.6)                                         
 ##  CRAN (R 3.3.2)                                      
+##  CRAN (R 3.3.2)                                      
+##  CRAN (R 3.3.0)                                      
 ##  CRAN (R 3.3.0)                                      
 ##  CRAN (R 3.3.2)                                      
+##  CRAN (R 3.3.2)                                      
+##  local                                               
+##  local                                               
 ##  local                                               
 ##  cran (@1.1.5)                                       
 ##  cran (@1.2.0)                                       
+##  CRAN (R 3.3.2)                                      
+##  CRAN (R 3.3.2)                                      
 ##  cran (@1.3.4)                                       
 ##  cran (@0.7.1)                                       
 ##  CRAN (R 3.3.2)                                      
@@ -577,6 +722,8 @@ anova(lme1)</code></pre>
 ##  local                                               
 ##  Github (jimhester/withr@a43df66)                    
 ##  cran (@1.1.1)                                       
+##  CRAN (R 3.3.0)                                      
+##  CRAN (R 3.3.2)                                      
 ##  CRAN (R 3.3.2)</code></pre>
 </div>
 

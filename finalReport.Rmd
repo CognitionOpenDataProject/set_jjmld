@@ -9,8 +9,10 @@ output:
 #### Article ID: jjmld
 #### Pilot: Gustav Nilsonne
 #### Co-pilot: Tom Hardwicke  
-#### Start date: 05/12/17
-#### End date: 10/24/17
+#### Start date: May 12 2017
+#### End date: Oct 24 2017
+#### Final verification: Tom Hardwicke
+#### Date: Nov 9 2017
 
 -------
 
@@ -28,6 +30,9 @@ The research hypothesis was that threatening visual input would gain faster acce
 
 ```{r global_options, include=FALSE}
 knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE)
+
+# prepare an empty report object, we will update this each time we run compareValues2()
+reportObject <- data.frame("Article_ID" = NA, "valuesChecked" = 0, "eyeballs" = 0, "Total_df" = 0, "Total_p" = 0, "Total_mean" = 0, "Total_sd" = 0, "Total_se" = 0, "Total_ci" = 0, "Total_bf" = 0, "Total_t" = 0, "Total_F" = 0, "Total_es" = 0, "Total_median" = 0, "Total_irr" = 0, "Total_r" = 0, "Total_z" = 0, "Total_coeff" = 0, "Total_n" = 0, "Total_x2" = 0, "Total_other" = 0, "Insufficient_Information_Errors" = 0, "Decision_Errors" = 0, "Major_Numerical_Errors" = 0, "Minor_Numerical_Errors" = 0, "Major_df" = 0, "Major_p" = 0, "Major_mean" = 0, "Major_sd" = 0, "Major_se" = 0, "Major_ci" = 0, "Major_bf" = 0, "Major_t" = 0, "Major_F" = 0, "Major_es" = 0, "Major_median" = 0, "Major_irr" = 0, "Major_r" = 0, "Major_z" = 0, "Major_coeff" = 0, "Major_n" = 0, "Major_x2" = 0, "Major_other" = 0, "affectsConclusion" = NA, "error_typo" = 0, "error_specification" = 0, "error_analysis" = 0, "error_data" = 0, "error_unidentified" = 0, "Author_Assistance" = NA, "resolved_typo" = 0, "resolved_specification" = 0, "resolved_analysis" = 0, "resolved_data" = 0, "correctionSuggested" = NA, "correctionPublished" = NA)
 ```
 
 ## Step 1: Load packages
@@ -39,6 +44,7 @@ library(haven) # import and export 'SPSS', 'Stata' and 'SAS' Files
 library(readxl) # import excel files
 library(CODreports) # custom report functions
 library(nlme)
+library(afex) # for anova
 ```
 
 ## Step 2: Load data
@@ -84,12 +90,12 @@ correctResponses <- sum(data$Correct)/length(data$Correct)*100
 ```
 
 ```{r}
-compareValues(reportedValue = 93.3, obtainedValue = correctResponses)
+reportObject <- compareValues2(reportedValue = "93.3", obtainedValue = correctResponses, valueType = 'other')
 ```
 
 This comes to 93.1% rather than 93.3%. Nonetheless, I proceed according to the method described.
 
-Exluded the incorrect responses:
+Excluded the incorrect responses:
 
 ```{r}
 data <- data[data$Correct == 1, ]
@@ -113,7 +119,7 @@ data_medians <- aggregate(RT ~ Participant + CFS_monocular + CS + CSplusColor, d
 There were five participants rather than four for which the specified conditions were true and data were reduced.
 
 ```{r}
-compareValues(reportedValue = 4, obtainedValue = 5)
+reportObject <- compareValues2(reportedValue = "4", obtainedValue = 5, valueType = 'other')
 ```
 
 ### Descriptive statistics
@@ -124,16 +130,16 @@ Descriptive statistics were reported in this paper as follow/up analyses to infe
 
 ```{r}
 m1 <- mean(data_medians$RT[data_medians$CS == 1])
-compareValues(reportedValue = 1.557, obtainedValue = m1)
+reportObject <- compareValues2(reportedValue = "1557", obtainedValue = m1*1000, valueType = 'mean')
 
 sd1 <- sd(data_medians$RT[data_medians$CS == 1])
-compareValues(reportedValue = 0.284, obtainedValue = sd1)
+reportObject <- compareValues2(reportedValue = "284", obtainedValue = sd1*1000, valueType = 'sd')
 
 m2 <- mean(data_medians$RT[data_medians$CS == 2])
-compareValues(reportedValue = 1.718, obtainedValue = m2)
+reportObject <- compareValues2(reportedValue = "1718", obtainedValue = m2*1000, valueType = 'mean')
 
 sd2 <- sd(data_medians$RT[data_medians$CS == 2])
-compareValues(reportedValue = 0.432, obtainedValue = sd2)
+reportObject <- compareValues2(reportedValue = "432", obtainedValue = sd2*1000, valueType = 'sd')
 ```
 
 The means are close, but there are considerable differences for the standard deviations.
@@ -142,16 +148,16 @@ The means are close, but there are considerable differences for the standard dev
 
 ```{r}
 m3 <- mean(data_medians$RT[data_medians$CFS_monocular == 1])
-compareValues(reportedValue = 1.660, obtainedValue = m3)
+reportObject <- compareValues2(reportedValue = "1660", obtainedValue = m3*1000, valueType = 'mean')
 
 sd3 <- sd(data_medians$RT[data_medians$CFS_monocular == 1])
-compareValues(reportedValue = 0.524, obtainedValue = sd3)
+reportObject <- compareValues2(reportedValue = "524", obtainedValue = sd3*1000, valueType = 'sd')
 
 m4 <- mean(data_medians$RT[data_medians$CFS_monocular == 2])
-compareValues(reportedValue = 1.615, obtainedValue = m4)
+reportObject <- compareValues2(reportedValue = "1615", obtainedValue = m4*1000, valueType = 'mean')
 
 sd4 <- sd(data_medians$RT[data_medians$CFS_monocular == 2])
-compareValues(reportedValue = 0.248, obtainedValue = sd4)
+reportObject <- compareValues2(reportedValue = "248", obtainedValue = sd4*1000, valueType = 'sd')
 ```
 
 Means and standard deviations are close, but there is one major error.
@@ -163,25 +169,59 @@ m5 <- (mean(data_medians$RT[data_medians$CS == 1 & data_medians$CFS_monocular ==
 mean(data_medians$RT[data_medians$CS == 1 & data_medians$CFS_monocular == 1])) -
 (mean(data_medians$RT[data_medians$CS == 2 & data_medians$CFS_monocular == 2]) - 
 mean(data_medians$RT[data_medians$CS == 2 & data_medians$CFS_monocular == 1]))
-# NB: Check levels in the above calculation
-compareValues(reportedValue = 0.322, obtainedValue = m5)
+
+reportObject <- compareValues2(reportedValue = "322", obtainedValue = m5*1000, valueType = 'mean')
 ```
 
 ### Inferential statistics
+
 > We conducted a 2 × 2 repeated-measures ANOVA with the within-subject factors Conditioning and Suppression, and the between-subject factor Color. This revealed a main effect of Conditioning, F(1, 14) = 8.97, p = .010, η2 = .39
 
+```{r}
+aov.out <- aov_ez(id = "Participant", data = data_medians, dv = 'RT', within = c('CS', 'CFS_monocular'), between = 'CSplusColor', anova_table = list(correction = "none", es = "pes"), type = 'III')
+
+reportObject <- compareValues2(reportedValue = "1", obtainedValue = aov.out$anova_table$`num Df`[2], valueType = 'df')
+reportObject <- compareValues2(reportedValue = "14", obtainedValue = aov.out$anova_table$`den Df`[2], valueType = 'df')
+reportObject <- compareValues2(reportedValue = "8.97", obtainedValue = aov.out$anova_table$`F`[2], valueType = 'F')
+reportObject <- compareValues2(reportedValue = ".010", obtainedValue = aov.out$anova_table$`Pr(>F)`[2], valueType = 'p')
+reportObject <- compareValues2(reportedValue = ".39", obtainedValue = aov.out$anova_table$`pes`[2], valueType = 'es')
+```
 > The absence of a main effect of Suppression, F(1, 14) = .20, p = .659, η2 = .01, indicated [...].
 
-> The between-subject factor Color did not interact with either Suppression (p = 0.175) or Conditioning (p = 0.623). Finally, there was an interaction between Suppression and Conditioning on response times, F(1, 14) = 13.98, p = .002, η2 = .50, but no three-way interaction with the between-subject factor Color, F(1, 14) = .08, p = .780, η2 = .01.
-
 ```{r}
-aov1 <- aov(RT ~ CSplusColor + Error(Participant/(CFS_monocular+CS)), data_medians)
-summary(aov1)
-
-lme1 <- lme(RT ~ CSplusColor*CFS_monocular*CS, random = ~1|Participant, data_medians)
-anova(lme1)
+reportObject <- compareValues2(reportedValue = "1", obtainedValue = aov.out$anova_table$`num Df`[4], valueType = 'df')
+reportObject <- compareValues2(reportedValue = "14", obtainedValue = aov.out$anova_table$`den Df`[4], valueType = 'df')
+reportObject <- compareValues2(reportedValue = ".20", obtainedValue = aov.out$anova_table$`F`[4], valueType = 'F')
+reportObject <- compareValues2(reportedValue = ".659", obtainedValue = aov.out$anova_table$`Pr(>F)`[4], valueType = 'p')
+reportObject <- compareValues2(reportedValue = ".01", obtainedValue = aov.out$anova_table$`pes`[4], valueType = 'es')
 ```
 
+> The between-subject factor Color did not interact with either Suppression (p = 0.175) or Conditioning (p = 0.623). 
+
+```{r}
+reportObject <- compareValues2(reportedValue = "0.175", obtainedValue = aov.out$anova_table$`Pr(>F)`[5], valueType = 'p')
+reportObject <- compareValues2(reportedValue = "0.623", obtainedValue = aov.out$anova_table$`Pr(>F)`[3], valueType = 'p')
+```
+
+> Finally, there was an interaction between Suppression and Conditioning on response times, F(1, 14) = 13.98, p = .002, η2 = .50, 
+
+```{r}
+reportObject <- compareValues2(reportedValue = "1", obtainedValue = aov.out$anova_table$`num Df`[6], valueType = 'df')
+reportObject <- compareValues2(reportedValue = "14", obtainedValue = aov.out$anova_table$`den Df`[6], valueType = 'df')
+reportObject <- compareValues2(reportedValue = "13.98", obtainedValue = aov.out$anova_table$`F`[6], valueType = 'F')
+reportObject <- compareValues2(reportedValue = ".002", obtainedValue = aov.out$anova_table$`Pr(>F)`[6], valueType = 'p')
+reportObject <- compareValues2(reportedValue = ".50", obtainedValue = aov.out$anova_table$`pes`[6], valueType = 'es')
+```
+
+> but no three-way interaction with the between-subject factor Color, F(1, 14) = .08, p = .780, η2 = .01.
+
+```{r}
+reportObject <- compareValues2(reportedValue = "1", obtainedValue = aov.out$anova_table$`num Df`[7], valueType = 'df')
+reportObject <- compareValues2(reportedValue = "14", obtainedValue = aov.out$anova_table$`den Df`[7], valueType = 'df')
+reportObject <- compareValues2(reportedValue = ".08", obtainedValue = aov.out$anova_table$`F`[7], valueType = 'F')
+reportObject <- compareValues2(reportedValue = ".780", obtainedValue = aov.out$anova_table$`Pr(>F)`[7], valueType = 'p')
+reportObject <- compareValues2(reportedValue = ".01", obtainedValue = aov.out$anova_table$`pes`[7], valueType = 'es')
+```
 > Subsequent paired-samples t-tests revealed that when targets were interocularly suppressed, discrimination of the oriented gratings was faster when they were surrounded by a CS+ annulus (M = 1498 ms, SD = 416) than a CS− annulus (M = 1822 ms, SD = 646), t(15) = 3.72, p = .002, Cohen’s d = 1.92. When the grating and annulus were not interocularly suppressed (i.e., in the monocular condition), however, response times did not differ between CS+ trials (M = 1615 ms, SD = 252) and CS− trials (M = 1614 ms, SD = 271), t(15) = .04, p = .968, Cohen’s d = .02. There was no correlation between the influence of conditioning on response times in the monocular condition and the suppression condition, R(14) = .29, p = .276. 
 
 ```{r}
@@ -192,23 +232,62 @@ INSUFFICIENT INFORMATION ERROR.
 
 ## Step 5: Conclusion
 
-
-```{r}
- codReport(Report_Type = 'joint',
-           Article_ID = 'jjmld', 
-           Insufficient_Information_Errors = 1,
-           Decision_Errors = 0, 
-           Major_Numerical_Errors = 4, 
-           Minor_Numerical_Errors = 7,
-           Author_Assistance = TRUE)
-```
-
-Initially we were unable to proceed with the analysis because necessary information was not provided in the data file. Specifically, responses were not identified as correct or incorrect - we need this information in order to calculate the response times, which are based only on trials with correct responses. Additionally, we cannot see a ‘color’ variable in the data file, which we needed in order to reproduce the 2 × 2 repeated-measures ANOVA with the within-subject factors Conditioning and Suppression, and the between-subject factor Color.
+Initially we were unable to proceed with the analysis because necessary information was not provided in the data file. Specifically, responses were not identified as correct or incorrect - we need this information in order to calculate the response times, which are based only on trials with correct responses. Additionally, there was no ‘color’ variable in the data file, which we needed in order to reproduce the 2 × 2 repeated-measures ANOVA with the within-subject factors Conditioning and Suppression, and the between-subject factor Color.
 
 We contacted one of the original authors and they sent new data files containing the missing information. However, they also said that they could no longer reproduce some of the reported values (they did not specify which ones). They also said that "discrepancies should be relatively negligible, though, in terms of interpretations."
 
-We continued to attempt the reanalysis with the new data files in order to estimate the number of reproducibility errors. We encountered 4 major numerical errors and one insufficience information error. Because we could not complete part of the analysis, we cannot ascertain whether the substantive conclusions of the article were influenced by the reproducibility issues.
+We continued to attempt the reanalysis with the new data files in order to estimate the number of reproducibility errors. We encountered major numerical errors and one insufficient information error. Because we could not complete part of the analysis, we cannot ascertain whether the substantive conclusions of the article were influenced by the reproducibility issues.
 
+```{r}
+reportObject$Article_ID <- "jjmld"
+reportObject$affectsConclusion <- "unclear"
+reportObject$error_typo <- 0
+reportObject$error_specification <- 0
+reportObject$error_analysis <- 0
+reportObject$error_data <- 0
+reportObject$error_unidentified <- 1
+reportObject$Author_Assistance <- T
+reportObject$resolved_typo <- 0
+reportObject$resolved_specification <- 0
+reportObject$resolved_analysis <- 0
+reportObject$resolved_data <- 1
+reportObject$correctionSuggested <- F
+reportObject$correctionPublished <- NA
+
+# decide on final outcome
+if(reportObject$Decision_Errors > 0 | reportObject$Major_Numerical_Errors > 0 | reportObject$Insufficient_Information_Errors > 0){
+  reportObject$finalOutcome <- "Failure"
+  if(reportObject$Author_Assistance == T){
+    reportObject$finalOutcome <- "Failure despite author assistance"
+  }
+}else{
+  reportObject$finalOutcome <- "Success"
+  if(reportObject$Author_Assistance == T){
+    reportObject$finalOutcome <- "Success with author assistance"
+  }
+}
+
+# save the report object
+filename <- paste0("reportObject_", reportObject$Article_ID,".csv")
+write_csv(reportObject, filename)
+```
+
+## Report Object
+
+```{r, echo = FALSE}
+# display report object in chunks
+kable(reportObject[2:10], align = 'l')
+kable(reportObject[11:20], align = 'l')
+kable(reportObject[21:25], align = 'l')
+kable(reportObject[26:30], align = 'l')
+kable(reportObject[31:35], align = 'l')
+kable(reportObject[36:40], align = 'l')
+kable(reportObject[41:45], align = 'l')
+kable(reportObject[46:51], align = 'l')
+kable(reportObject[52:57], align = 'l')
+```
+
+## Session information
 
 ```{r session_info, include=TRUE, echo=TRUE, results='markup'}
 devtools::session_info()
