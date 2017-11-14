@@ -435,33 +435,6 @@ reportObject &lt;- compareValues2(reportedValue = &quot;1&quot;, obtainedValue =
 </div>
 <div id="step-5-conclusion" class="section level2">
 <h2>Step 5: Conclusion</h2>
-<pre class="r"><code> codReport(Report_Type = 'joint',
-           Article_ID = 'jjmld', 
-           Insufficient_Information_Errors = 1,
-           Decision_Errors = 0, 
-           Major_Numerical_Errors = 4, 
-           Minor_Numerical_Errors = 7,
-           Author_Assistance = TRUE)</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="right">Insufficient_Information_Errors</th>
-<th align="right">Decision_Errors</th>
-<th align="right">Major_Numerical_Errors</th>
-<th align="right">Minor_Numerical_Errors</th>
-<th align="left">Final_Outcome</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="right">7</td>
-<td align="left">Failure despite author assistance</td>
-</tr>
-</tbody>
-</table>
 <p>Initially we were unable to proceed with the analysis because necessary information was not provided in the data file. Specifically, responses were not identified as correct or incorrect - we need this information in order to calculate the response times, which are based only on trials with correct responses. Additionally, there was no ‘color’ variable in the data file, which we needed in order to reproduce the 2 × 2 repeated-measures ANOVA with the within-subject factors Conditioning and Suppression, and the between-subject factor Color.</p>
 <p>We contacted one of the original authors and they sent new data files containing the missing information. However, they also said that they could no longer reproduce some of the reported values (they did not specify which ones). They also said that “discrepancies should be relatively negligible, though, in terms of interpretations.”</p>
 <p>We continued to attempt the reanalysis with the new data files in order to estimate the number of reproducibility errors. We encountered major numerical errors and one insufficient information error. Because we could not complete part of the analysis, we cannot ascertain whether the substantive conclusions of the article were influenced by the reproducibility issues.</p>
@@ -497,6 +470,211 @@ if(reportObject$Decision_Errors &gt; 0 | reportObject$Major_Numerical_Errors &gt
 filename &lt;- paste0(&quot;reportObject_&quot;, reportObject$Article_ID,&quot;.csv&quot;)
 write_csv(reportObject, filename)</code></pre>
 </div>
+<div id="report-object" class="section level2">
+<h2>Report Object</h2>
+<table>
+<thead>
+<tr class="header">
+<th align="left">valuesChecked</th>
+<th align="left">eyeballs</th>
+<th align="left">Total_df</th>
+<th align="left">Total_p</th>
+<th align="left">Total_mean</th>
+<th align="left">Total_sd</th>
+<th align="left">Total_se</th>
+<th align="left">Total_ci</th>
+<th align="left">Total_bf</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">33</td>
+<td align="left">0</td>
+<td align="left">8</td>
+<td align="left">6</td>
+<td align="left">5</td>
+<td align="left">4</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Total_t</th>
+<th align="left">Total_F</th>
+<th align="left">Total_es</th>
+<th align="left">Total_median</th>
+<th align="left">Total_irr</th>
+<th align="left">Total_r</th>
+<th align="left">Total_z</th>
+<th align="left">Total_coeff</th>
+<th align="left">Total_n</th>
+<th align="left">Total_x2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">0</td>
+<td align="left">4</td>
+<td align="left">4</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Total_other</th>
+<th align="left">Insufficient_Information_Errors</th>
+<th align="left">Decision_Errors</th>
+<th align="left">Major_Numerical_Errors</th>
+<th align="left">Minor_Numerical_Errors</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">13</td>
+<td align="left">11</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Major_df</th>
+<th align="left">Major_p</th>
+<th align="left">Major_mean</th>
+<th align="left">Major_sd</th>
+<th align="left">Major_se</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">0</td>
+<td align="left">5</td>
+<td align="left">0</td>
+<td align="left">3</td>
+<td align="left">0</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Major_ci</th>
+<th align="left">Major_bf</th>
+<th align="left">Major_t</th>
+<th align="left">Major_F</th>
+<th align="left">Major_es</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">3</td>
+<td align="left">1</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Major_median</th>
+<th align="left">Major_irr</th>
+<th align="left">Major_r</th>
+<th align="left">Major_z</th>
+<th align="left">Major_coeff</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Major_n</th>
+<th align="left">Major_x2</th>
+<th align="left">Major_other</th>
+<th align="left">affectsConclusion</th>
+<th align="left">error_typo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">unclear</td>
+<td align="left">0</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th align="left">error_specification</th>
+<th align="left">error_analysis</th>
+<th align="left">error_data</th>
+<th align="left">error_unidentified</th>
+<th align="left">Author_Assistance</th>
+<th align="left">resolved_typo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">TRUE</td>
+<td align="left">0</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th align="left">resolved_specification</th>
+<th align="left">resolved_analysis</th>
+<th align="left">resolved_data</th>
+<th align="left">correctionSuggested</th>
+<th align="left">correctionPublished</th>
+<th align="left">finalOutcome</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">FALSE</td>
+<td align="left">NA</td>
+<td align="left">Failure despite author assistance</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div id="session-information" class="section level2">
 <h2>Session information</h2>
 <pre class="r"><code>devtools::session_info()</code></pre>
@@ -506,117 +684,117 @@ write_csv(reportObject, filename)</code></pre>
 ##  ui       X11                         
 ##  language (EN)                        
 ##  collate  en_US.UTF-8                 
-##  tz       America/Los_Angeles         
-##  date     2017-11-10                  
+##  tz       &lt;NA&gt;                        
+##  date     2017-11-14                  
 ## 
-##  package      * version  date      
-##  acepack        1.4.1    2016-10-29
-##  afex         * 0.18-0   2017-05-25
-##  assertthat     0.2.0    2017-04-11
-##  backports      1.0.5    2017-01-18
-##  base         * 3.3.2    2016-10-31
-##  base64enc      0.1-3    2015-07-28
-##  bindr          0.1      2016-11-13
-##  bindrcpp       0.2      2017-06-17
-##  broom          0.4.2    2017-02-13
-##  car            2.1-5    2017-07-04
-##  cellranger     1.1.0    2016-07-27
-##  checkmate      1.8.2    2016-11-02
-##  cluster        2.0.5    2016-10-08
-##  coda           0.19-1   2016-12-08
-##  codetools      0.2-15   2016-10-05
-##  CODreports   * 0.1      2017-11-09
-##  coin           1.1-3    2016-11-28
-##  colorspace     1.3-2    2016-12-14
-##  data.table     1.10.4-3 2017-10-27
-##  datasets     * 3.3.2    2016-10-31
-##  devtools       1.13.3   2017-08-02
-##  digest         0.6.12   2017-01-27
-##  dplyr        * 0.7.4    2017-09-28
-##  estimability * 1.2      2016-11-19
-##  evaluate       0.10.1   2017-06-24
-##  forcats        0.2.0    2017-01-23
-##  foreign        0.8-67   2016-09-13
-##  Formula        1.2-2    2017-07-10
-##  ggplot2      * 2.2.1    2016-12-30
-##  glue           1.1.1    2017-06-21
-##  graphics     * 3.3.2    2016-10-31
-##  grDevices    * 3.3.2    2016-10-31
-##  grid           3.3.2    2016-10-31
-##  gridExtra      2.3      2017-09-09
-##  gtable         0.2.0    2016-02-26
-##  haven        * 1.0.0    2016-09-23
-##  highr          0.6      2016-05-09
-##  Hmisc          4.0-3    2017-05-02
-##  hms            0.3      2016-11-22
-##  htmlTable      1.9      2017-01-26
-##  htmltools      0.3.6    2017-04-28
-##  htmlwidgets    0.8      2016-11-09
-##  httr           1.3.1    2017-08-20
-##  jsonlite       1.5      2017-06-01
-##  knitr        * 1.17     2017-08-10
-##  lattice        0.20-34  2016-09-06
-##  latticeExtra   0.6-28   2016-02-09
-##  lazyeval       0.2.0    2016-06-12
-##  lme4         * 1.1-13   2017-04-19
-##  lmerTest       2.0-33   2016-12-03
-##  lsmeans      * 2.25-5   2017-03-09
-##  lubridate      1.6.0    2016-09-13
-##  magrittr       1.5      2014-11-22
-##  MASS           7.3-45   2016-04-21
-##  Matrix       * 1.2-7.1  2016-09-01
-##  MatrixModels   0.4-1    2015-08-22
-##  memoise        1.1.0    2017-04-21
-##  methods      * 3.3.2    2016-10-31
-##  mgcv           1.8-17   2017-02-08
-##  minqa          1.2.4    2014-10-09
-##  mnormt         1.5-5    2016-10-15
-##  modelr         0.1.0    2016-08-31
-##  modeltools     0.2-21   2013-09-02
-##  multcomp       1.4-6    2016-07-14
-##  munsell        0.4.3    2016-02-13
-##  mvtnorm        1.0-5    2016-02-02
-##  nlme         * 3.1-128  2016-05-10
-##  nloptr         1.0.4    2014-08-04
-##  nnet           7.3-12   2016-02-02
-##  parallel       3.3.2    2016-10-31
-##  pbkrtest       0.4-6    2016-01-27
-##  pkgconfig      2.0.1    2017-03-21
-##  plyr           1.8.4    2016-06-08
-##  psych          1.7.5    2017-05-03
-##  purrr        * 0.2.3    2017-08-02
-##  quantreg       5.29     2016-09-04
-##  R6             2.2.2    2017-06-17
-##  RColorBrewer   1.1-2    2014-12-07
-##  Rcpp           0.12.13  2017-09-28
-##  readr        * 1.1.0    2017-03-22
-##  readxl       * 1.0.0    2017-04-18
-##  reshape2       1.4.2    2016-10-22
-##  rlang          0.1.2    2017-08-09
-##  rmarkdown      1.6      2017-06-15
-##  rpart          4.1-10   2015-06-29
-##  rprojroot      1.2      2017-01-16
-##  rvest          0.3.2    2016-06-17
-##  sandwich       2.3-4    2015-09-24
-##  scales         0.4.1    2016-11-09
-##  SparseM        1.74     2016-11-10
-##  splines        3.3.2    2016-10-31
-##  stats        * 3.3.2    2016-10-31
-##  stats4         3.3.2    2016-10-31
-##  stringi        1.1.5    2017-04-07
-##  stringr        1.2.0    2017-02-18
-##  survival       2.41-3   2017-04-04
-##  TH.data        1.0-8    2017-01-23
-##  tibble       * 1.3.4    2017-08-22
-##  tidyr        * 0.7.1    2017-09-01
-##  tidyverse    * 1.1.1    2017-01-27
-##  tools          3.3.2    2016-10-31
-##  utils        * 3.3.2    2016-10-31
-##  withr          2.0.0    2017-10-17
-##  xml2           1.1.1    2017-01-24
-##  xtable         1.8-2    2016-02-05
-##  yaml           2.1.14   2016-11-12
-##  zoo            1.7-14   2016-12-16
+##  package      * version    date      
+##  acepack        1.4.1      2016-10-29
+##  afex         * 0.18-0     2017-05-25
+##  assertthat     0.2.0      2017-04-11
+##  backports      1.0.5      2017-01-18
+##  base         * 3.3.2      2016-10-31
+##  base64enc      0.1-3      2015-07-28
+##  bindr          0.1        2016-11-13
+##  bindrcpp       0.2        2017-06-17
+##  broom          0.4.2      2017-02-13
+##  car            2.1-5      2017-07-04
+##  cellranger     1.1.0      2016-07-27
+##  checkmate      1.8.2      2016-11-02
+##  cluster        2.0.5      2016-10-08
+##  coda           0.19-1     2016-12-08
+##  codetools      0.2-15     2016-10-05
+##  CODreports   * 0.1        2017-11-12
+##  coin           1.1-3      2016-11-28
+##  colorspace     1.3-2      2016-12-14
+##  data.table     1.10.4-3   2017-10-27
+##  datasets     * 3.3.2      2016-10-31
+##  devtools       1.13.4     2017-11-09
+##  digest         0.6.12     2017-01-27
+##  dplyr        * 0.7.4      2017-09-28
+##  estimability * 1.2        2016-11-19
+##  evaluate       0.10.1     2017-06-24
+##  forcats        0.2.0      2017-01-23
+##  foreign        0.8-67     2016-09-13
+##  Formula        1.2-2      2017-07-10
+##  ggplot2      * 2.2.1      2016-12-30
+##  glue           1.1.1      2017-06-21
+##  graphics     * 3.3.2      2016-10-31
+##  grDevices    * 3.3.2      2016-10-31
+##  grid           3.3.2      2016-10-31
+##  gridExtra      2.3        2017-09-09
+##  gtable         0.2.0      2016-02-26
+##  haven        * 1.0.0      2016-09-23
+##  highr          0.6        2016-05-09
+##  Hmisc          4.0-3      2017-05-02
+##  hms            0.3        2016-11-22
+##  htmlTable      1.9        2017-01-26
+##  htmltools      0.3.6      2017-04-28
+##  htmlwidgets    0.8        2016-11-09
+##  httr           1.3.1      2017-08-20
+##  jsonlite       1.5        2017-06-01
+##  knitr        * 1.17       2017-08-10
+##  lattice        0.20-34    2016-09-06
+##  latticeExtra   0.6-28     2016-02-09
+##  lazyeval       0.2.0      2016-06-12
+##  lme4         * 1.1-13     2017-04-19
+##  lmerTest       2.0-33     2016-12-03
+##  lsmeans      * 2.25-5     2017-03-09
+##  lubridate      1.6.0      2016-09-13
+##  magrittr       1.5        2014-11-22
+##  MASS           7.3-45     2016-04-21
+##  Matrix       * 1.2-7.1    2016-09-01
+##  MatrixModels   0.4-1      2015-08-22
+##  memoise        1.1.0      2017-04-21
+##  methods      * 3.3.2      2016-10-31
+##  mgcv           1.8-17     2017-02-08
+##  minqa          1.2.4      2014-10-09
+##  mnormt         1.5-5      2016-10-15
+##  modelr         0.1.0      2016-08-31
+##  modeltools     0.2-21     2013-09-02
+##  multcomp       1.4-6      2016-07-14
+##  munsell        0.4.3      2016-02-13
+##  mvtnorm        1.0-5      2016-02-02
+##  nlme         * 3.1-128    2016-05-10
+##  nloptr         1.0.4      2014-08-04
+##  nnet           7.3-12     2016-02-02
+##  parallel       3.3.2      2016-10-31
+##  pbkrtest       0.4-6      2016-01-27
+##  pkgconfig      2.0.1      2017-03-21
+##  plyr           1.8.4      2016-06-08
+##  psych          1.7.5      2017-05-03
+##  purrr        * 0.2.3      2017-08-02
+##  quantreg       5.29       2016-09-04
+##  R6             2.2.2      2017-06-17
+##  RColorBrewer   1.1-2      2014-12-07
+##  Rcpp           0.12.13    2017-09-28
+##  readr        * 1.1.0      2017-03-22
+##  readxl       * 1.0.0      2017-04-18
+##  reshape2       1.4.2      2016-10-22
+##  rlang          0.1.2      2017-08-09
+##  rmarkdown      1.6        2017-06-15
+##  rpart          4.1-10     2015-06-29
+##  rprojroot      1.2        2017-01-16
+##  rvest          0.3.2      2016-06-17
+##  sandwich       2.3-4      2015-09-24
+##  scales         0.4.1      2016-11-09
+##  SparseM        1.74       2016-11-10
+##  splines        3.3.2      2016-10-31
+##  stats        * 3.3.2      2016-10-31
+##  stats4         3.3.2      2016-10-31
+##  stringi        1.1.5      2017-04-07
+##  stringr        1.2.0      2017-02-18
+##  survival       2.41-3     2017-04-04
+##  TH.data        1.0-8      2017-01-23
+##  tibble       * 1.3.4      2017-08-22
+##  tidyr        * 0.7.1      2017-09-01
+##  tidyverse    * 1.1.1      2017-01-27
+##  tools          3.3.2      2016-10-31
+##  utils        * 3.3.2      2016-10-31
+##  withr          2.1.0.9000 2017-11-12
+##  xml2           1.1.1      2017-01-24
+##  xtable         1.8-2      2016-02-05
+##  yaml           2.1.14     2016-11-12
+##  zoo            1.7-14     2016-12-16
 ##  source                                              
 ##  CRAN (R 3.3.0)                                      
 ##  CRAN (R 3.3.2)                                      
@@ -633,12 +811,12 @@ write_csv(reportObject, filename)</code></pre>
 ##  CRAN (R 3.3.2)                                      
 ##  CRAN (R 3.3.2)                                      
 ##  CRAN (R 3.3.2)                                      
-##  Github (CognitionOpenDataProject/CODreports@48e764a)
+##  Github (CognitionOpenDataProject/CODreports@79ccb56)
 ##  CRAN (R 3.3.2)                                      
 ##  CRAN (R 3.3.2)                                      
 ##  cran (@1.10.4-)                                     
 ##  local                                               
-##  cran (@1.13.3)                                      
+##  cran (@1.13.4)                                      
 ##  cran (@0.6.12)                                      
 ##  cran (@0.7.4)                                       
 ##  CRAN (R 3.3.2)                                      
@@ -720,7 +898,7 @@ write_csv(reportObject, filename)</code></pre>
 ##  CRAN (R 3.3.2)                                      
 ##  local                                               
 ##  local                                               
-##  Github (jimhester/withr@a43df66)                    
+##  Github (jimhester/withr@a9ebeb3)                    
 ##  cran (@1.1.1)                                       
 ##  CRAN (R 3.3.0)                                      
 ##  CRAN (R 3.3.2)                                      
