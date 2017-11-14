@@ -230,6 +230,11 @@ reportObject <- compareValues2(reportedValue = ".01", obtainedValue = aov.out$an
 
 INSUFFICIENT INFORMATION ERROR.
 
+```{r}
+reportObject$Insufficient_Information_Errors <- reportObject$Insufficient_Information_Errors + 1
+```
+
+
 ## Step 5: Conclusion
 
 Initially we were unable to proceed with the analysis because necessary information was not provided in the data file. Specifically, responses were not identified as correct or incorrect - we need this information in order to calculate the response times, which are based only on trials with correct responses. Additionally, there was no ‘color’ variable in the data file, which we needed in order to reproduce the 2 × 2 repeated-measures ANOVA with the within-subject factors Conditioning and Suppression, and the between-subject factor Color.
